@@ -2,8 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 
 const users = [
-  { id: 1, name: 'Dad', gradient: 'gradient-purple-pink', emoji: '🏋️' },
-  { id: 2, name: 'Son', gradient: 'gradient-blue-cyan', emoji: '💪' },
+  { id: 1, name: 'Arman', gradient: 'gradient-purple-pink', emoji: '🏋️' },
+  { id: 2, name: 'Adnan', gradient: 'gradient-blue-cyan', emoji: '💪' },
 ];
 
 export default function UserSelector() {

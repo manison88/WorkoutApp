@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
   created_at TEXT DEFAULT (datetime('now'))
 );
 
-INSERT INTO users (name) VALUES ('Dad'), ('Son');
+INSERT INTO users (name) VALUES ('Arman'), ('Adnan');
 
 -- Exercises with body part categories
 CREATE TABLE IF NOT EXISTS exercises (
