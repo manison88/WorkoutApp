@@ -5,4 +5,4 @@ pages_build_output_dir = "./dist"
 [[d1_databases]]
 binding = "DB"
 database_name = "workout-tracker-db"
-database_id = "local"
+database_id = "8138795e-900e-4082-b86d-3dcb4b5017b5"
