@@ -1,4 +1,4 @@
-import type { User, Exercise, WorkoutSession, WorkoutSet, SessionWithSets, WorkoutSetWithExercise, BodyMapData } from './types';
+import type { User, Exercise, WorkoutSession, WorkoutSet, SessionWithSets, WorkoutSetWithExercise, BodyMapData, ExerciseHistoryEntry } from './types';
 
 const BASE = '/api';
 
@@ -74,6 +74,10 @@ export const deleteSet = (id: number) =>
 // Progress
 export const getProgress = (exerciseId: number, userId: number, sessionId: number) =>
   request<WorkoutSetWithExercise[]>(`/progress/${exerciseId}?userId=${userId}&sessionId=${sessionId}`);
+
+// Exercise History
+export const getExerciseHistory = (exerciseId: number, userId: number) =>
+  request<ExerciseHistoryEntry[]>(`/exercises/${exerciseId}/history?userId=${userId}`);
 
 // Body Map
 export const getBodyMap = (userId: number, period: string = 'week') =>

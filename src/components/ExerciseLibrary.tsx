@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getExercises, addExercise } from '../api';
 import BackButton from './BackButton';
 import Navigation from './Navigation';
@@ -25,6 +26,7 @@ const BODY_PART_EMOJIS: Record<BodyPart, string> = {
 };
 
 export default function ExerciseLibrary() {
+  const navigate = useNavigate();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -155,7 +157,8 @@ export default function ExerciseLibrary() {
                   {list.map((ex) => (
                     <div
                       key={ex.id}
-                      className="gradient-card rounded-xl p-3 flex items-center justify-between transition-all duration-200"
+                      onClick={() => navigate(`/exercise/${ex.id}`)}
+                      className="gradient-card rounded-xl p-3 flex items-center justify-between transition-all duration-200 hover:scale-[1.01] cursor-pointer"
                     >
                       <div className="flex items-center gap-2">
                         <span className="text-white font-medium">{ex.name}</span>
@@ -165,9 +168,7 @@ export default function ExerciseLibrary() {
                           </span>
                         )}
                       </div>
-                      {ex.is_default === 0 && (
-                        <span className="text-xs text-gray-500">Custom</span>
-                      )}
+                      <span className="text-gray-500 text-lg">›</span>
                     </div>
                   ))}
                 </div>

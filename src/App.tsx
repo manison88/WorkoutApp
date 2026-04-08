@@ -7,6 +7,7 @@ import WorkoutHistory from './components/WorkoutHistory';
 import WorkoutSummary from './components/WorkoutSummary';
 import BodyMap from './components/BodyMap';
 import ExerciseLibrary from './components/ExerciseLibrary';
+import ExerciseHistory from './components/ExerciseHistory';
 
 function RequireUser({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
@@ -28,6 +29,7 @@ function AppRoutes() {
         <Route path="/summary/:id" element={<WorkoutSummary />} />
         <Route path="/body-map" element={<BodyMap />} />
         <Route path="/exercises" element={<ExerciseLibrary />} />
+        <Route path="/exercise/:id" element={<ExerciseHistory />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </RequireUser>

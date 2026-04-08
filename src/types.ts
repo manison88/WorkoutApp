@@ -51,6 +51,17 @@ export interface ProgressData {
   current_sets: WorkoutSet[];
 }
 
+export interface ExerciseHistoryEntry {
+  set_number: number;
+  weight: number | null;
+  reps: number | null;
+  notes: string | null;
+  created_at: string;
+  session_id: number;
+  started_at: string;
+  workout_type: WorkoutType | null;
+}
+
 export type MuscleGroup =
   | 'chest' | 'upper_back' | 'lower_back' | 'shoulders'
   | 'biceps' | 'triceps' | 'forearms' | 'abs' | 'obliques'
