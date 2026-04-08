@@ -68,12 +68,6 @@ export default function WorkoutHistory() {
     return uniqueExercises.size;
   };
 
-  const getTotalVolume = (sessionId: number) => {
-    const detail = sessionDetails.get(sessionId);
-    if (!detail) return null;
-    const volume = detail.sets.reduce((sum, s) => sum + (s.weight ?? 0) * (s.reps ?? 0), 0);
-    return volume;
-  };
 
   const handleDelete = async (id: number) => {
     try {
@@ -119,7 +113,6 @@ export default function WorkoutHistory() {
           <div className="space-y-3">
             {sessions.map((s) => {
               const exerciseCount = getExerciseCount(s.id);
-              const volume = getTotalVolume(s.id);
               const exerciseNames = getExerciseNames(s.id);
 
               return (
@@ -157,18 +150,11 @@ export default function WorkoutHistory() {
                       <p className="text-gray-300 text-sm mt-2">{exerciseNames}</p>
                     )}
 
-                    <div className="flex gap-4 mt-2">
-                      {exerciseCount !== null && (
-                        <span className="text-gray-400 text-xs">
-                          {exerciseCount} exercise{exerciseCount !== 1 ? 's' : ''}
-                        </span>
-                      )}
-                      {volume !== null && volume > 0 && (
-                        <span className="text-gray-400 text-xs">
-                          {volume.toLocaleString()} lbs total volume
-                        </span>
-                      )}
-                    </div>
+                    {exerciseCount !== null && (
+                      <p className="text-gray-400 text-xs mt-2">
+                        {exerciseCount} exercise{exerciseCount !== 1 ? 's' : ''}
+                      </p>
+                    )}
                   </div>
 
                   {confirmDeleteId === s.id && (
