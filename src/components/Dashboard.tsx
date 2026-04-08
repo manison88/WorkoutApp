@@ -3,13 +3,24 @@ import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { getSessions, startSession } from '../api';
 import Navigation from './Navigation';
-import type { WorkoutSession } from '../types';
+import type { WorkoutSession, WorkoutType } from '../types';
+import { WORKOUT_TYPES } from '../types';
+
+const TYPE_COLORS: Record<WorkoutType, string> = {
+  Pull: 'gradient-blue-cyan',
+  Push: 'gradient-purple-pink',
+  Legs: 'gradient-green-cyan',
+  'Full Body': 'gradient-orange-pink',
+  Cardio: 'from-yellow-500 to-red-500 bg-gradient-to-r',
+};
 
 export default function Dashboard() {
   const { user, clearUser } = useUser();
   const navigate = useNavigate();
   const [sessions, setSessions] = useState<WorkoutSession[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showTypePicker, setShowTypePicker] = useState(false);
+  const [starting, setStarting] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -28,12 +39,14 @@ export default function Dashboard() {
     .filter((s) => s.status === 'completed')
     .slice(0, 5);
 
-  const handleStartWorkout = async () => {
+  const handleStartWorkout = async (workoutType: WorkoutType) => {
+    setStarting(true);
     try {
-      const session = await startSession(user.id);
+      const session = await startSession(user.id, workoutType);
       navigate(`/workout/${session.id}`);
     } catch (err) {
       console.error('Failed to start session', err);
+      setStarting(false);
     }
   };
 
@@ -72,11 +85,33 @@ export default function Dashboard() {
             onClick={() => navigate(`/workout/${activeSession.id}`)}
             className="w-full gradient-orange-pink text-white font-bold text-xl rounded-2xl py-5 transition-all duration-200 hover:opacity-90 active:scale-95 pulse-glow cursor-pointer"
           >
-            Continue Workout 💪
+            Continue {activeSession.workout_type || 'Workout'} 💪
           </button>
+        ) : showTypePicker ? (
+          <div className="space-y-3">
+            <p className="text-gray-400 text-sm text-center">What are you training today?</p>
+            <div className="grid grid-cols-2 gap-3">
+              {WORKOUT_TYPES.map((type) => (
+                <button
+                  key={type}
+                  onClick={() => handleStartWorkout(type)}
+                  disabled={starting}
+                  className={`${TYPE_COLORS[type]} text-white font-bold text-lg rounded-2xl py-4 transition-all duration-200 hover:opacity-90 active:scale-95 cursor-pointer disabled:opacity-50`}
+                >
+                  {type}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => setShowTypePicker(false)}
+              className="w-full text-gray-500 text-sm hover:text-white transition-all duration-200 cursor-pointer py-1"
+            >
+              Cancel
+            </button>
+          </div>
         ) : (
           <button
-            onClick={handleStartWorkout}
+            onClick={() => setShowTypePicker(true)}
             className="w-full gradient-purple-pink text-white font-bold text-xl rounded-2xl py-5 transition-all duration-200 hover:opacity-90 active:scale-95 cursor-pointer"
           >
             Start Workout 🏋️
@@ -121,7 +156,10 @@ export default function Dashboard() {
                   className="w-full gradient-card rounded-2xl p-4 flex items-center justify-between transition-all duration-200 hover:scale-[1.01] cursor-pointer"
                 >
                   <div className="text-left">
-                    <p className="text-white font-medium">{formatDate(s.started_at)}</p>
+                    <p className="text-white font-medium">
+                      {s.workout_type && <span className="text-accent-purple font-semibold">{s.workout_type} · </span>}
+                      {formatDate(s.started_at)}
+                    </p>
                     <p className="text-gray-400 text-sm">
                       {formatDuration(s.started_at, s.ended_at)}
                     </p>

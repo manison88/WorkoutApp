@@ -34,10 +34,10 @@ export const getSessions = (userId: number) =>
 export const getSession = (id: number) =>
   request<SessionWithSets>(`/sessions/${id}`);
 
-export const startSession = (userId: number) =>
+export const startSession = (userId: number, workoutType: string) =>
   request<WorkoutSession>('/sessions', {
     method: 'POST',
-    body: JSON.stringify({ user_id: userId }),
+    body: JSON.stringify({ user_id: userId, workout_type: workoutType }),
   });
 
 export const endSession = (id: number, notes?: string) =>

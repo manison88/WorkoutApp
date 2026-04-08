@@ -113,7 +113,10 @@ export default function WorkoutHistory() {
                 >
                   <div className="flex items-start justify-between">
                     <div>
-                      <p className="text-white font-bold">{formatDate(s.started_at)}</p>
+                      <p className="text-white font-bold">
+                        {s.workout_type && <span className="text-accent-purple">{s.workout_type} · </span>}
+                        {formatDate(s.started_at)}
+                      </p>
                       <p className="text-gray-500 text-xs">{formatTime(s.started_at)}</p>
                     </div>
                     <span className="gradient-purple-pink text-white text-xs font-medium px-2 py-1 rounded-lg">

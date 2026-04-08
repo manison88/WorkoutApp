@@ -166,7 +166,9 @@ export default function WorkoutSession() {
             &larr; Back
           </button>
           <div className="text-center">
-            <p className="text-gray-400 text-xs uppercase tracking-wider">Workout Time</p>
+            {session.workout_type && (
+              <p className="text-gray-300 text-xs font-semibold uppercase tracking-wider">{session.workout_type}</p>
+            )}
             <p className="text-3xl font-bold gradient-purple-pink bg-clip-text text-transparent">
               {elapsed}
             </p>

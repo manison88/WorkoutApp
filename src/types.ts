@@ -12,6 +12,10 @@ export interface Exercise {
   is_default: number;
 }
 
+export type WorkoutType = 'Pull' | 'Push' | 'Legs' | 'Full Body' | 'Cardio';
+
+export const WORKOUT_TYPES: WorkoutType[] = ['Pull', 'Push', 'Legs', 'Full Body', 'Cardio'];
+
 export interface WorkoutSession {
   id: number;
   user_id: number;
@@ -19,6 +23,7 @@ export interface WorkoutSession {
   ended_at: string | null;
   notes: string | null;
   status: 'active' | 'completed';
+  workout_type: WorkoutType | null;
 }
 
 export interface WorkoutSet {

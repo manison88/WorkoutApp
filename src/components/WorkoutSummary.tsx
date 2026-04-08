@@ -204,7 +204,11 @@ export default function WorkoutSummary() {
   return (
     <div className="max-w-lg mx-auto p-4 pb-8">
       <BackButton />
-      <h2 className="text-2xl font-bold text-white mb-4">Workout Summary</h2>
+      <h2 className="text-2xl font-bold text-white mb-1">
+        {session.workout_type && <span className="text-accent-purple">{session.workout_type} </span>}
+        Summary
+      </h2>
+      <p className="text-gray-400 text-sm mb-4">{date}</p>
 
       {/* ===== MOBILE-FRIENDLY VISIBLE SUMMARY ===== */}
 
@@ -229,9 +233,6 @@ export default function WorkoutSummary() {
           <p className="text-white text-2xl font-bold mt-1">{exercises.length}</p>
         </div>
       </div>
-
-      {/* Date */}
-      <p className="text-gray-400 text-sm mb-4">{date}</p>
 
       {/* Exercise list */}
       <div className="gradient-card rounded-2xl p-4 mb-4">
@@ -375,7 +376,7 @@ export default function WorkoutSummary() {
               textTransform: 'uppercase' as const,
             }}
           >
-            WORKOUT TRACKER
+            {session.workout_type ? `${session.workout_type.toUpperCase()} DAY` : 'WORKOUT TRACKER'}
           </div>
           <div style={{ fontSize: isStory ? 28 : 20, fontWeight: 500, opacity: 0.85 }}>
             {date}

@@ -45,7 +45,8 @@ CREATE TABLE IF NOT EXISTS workout_sessions (
   started_at TEXT DEFAULT (datetime('now')),
   ended_at TEXT,
   notes TEXT,
-  status TEXT DEFAULT 'active' CHECK (status IN ('active','completed'))
+  status TEXT DEFAULT 'active' CHECK (status IN ('active','completed')),
+  workout_type TEXT DEFAULT NULL
 );
 
 -- Individual sets within a session
