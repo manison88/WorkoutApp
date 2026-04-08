@@ -6,12 +6,12 @@ import Navigation from './Navigation';
 import type { WorkoutSession, WorkoutType } from '../types';
 import { WORKOUT_TYPES } from '../types';
 
-const TYPE_COLORS: Record<WorkoutType, string> = {
-  Pull: 'gradient-blue-cyan',
-  Push: 'gradient-purple-pink',
-  Legs: 'gradient-green-cyan',
-  'Full Body': 'gradient-orange-pink',
-  Cardio: 'from-yellow-500 to-red-500 bg-gradient-to-r',
+const TYPE_CONFIG: Record<WorkoutType, { gradient: string; icon: string; desc: string }> = {
+  Pull: { gradient: 'gradient-blue-cyan', icon: '🔵', desc: 'Back & Biceps' },
+  Push: { gradient: 'gradient-purple-pink', icon: '🟣', desc: 'Chest, Shoulders & Triceps' },
+  Legs: { gradient: 'gradient-green-cyan', icon: '🟢', desc: 'Quads, Hamstrings & Glutes' },
+  'Full Body': { gradient: 'gradient-orange-pink', icon: '🟠', desc: 'All muscle groups' },
+  Cardio: { gradient: 'from-yellow-500 to-red-500 bg-gradient-to-r', icon: '🔴', desc: 'Heart rate & endurance' },
 };
 
 export default function Dashboard() {
@@ -89,25 +89,36 @@ export default function Dashboard() {
           </button>
         ) : showTypePicker ? (
           <div className="space-y-3">
-            <p className="text-gray-400 text-sm text-center">What are you training today?</p>
-            <div className="grid grid-cols-2 gap-3">
-              {WORKOUT_TYPES.map((type) => (
-                <button
-                  key={type}
-                  onClick={() => handleStartWorkout(type)}
-                  disabled={starting}
-                  className={`${TYPE_COLORS[type]} text-white font-bold text-lg rounded-2xl py-4 transition-all duration-200 hover:opacity-90 active:scale-95 cursor-pointer disabled:opacity-50`}
-                >
-                  {type}
-                </button>
-              ))}
+            <div className="flex items-center justify-between">
+              <p className="text-white font-bold text-lg">What are you training?</p>
+              <button
+                onClick={() => setShowTypePicker(false)}
+                className="text-gray-500 hover:text-white transition-colors text-sm cursor-pointer"
+              >
+                Cancel
+              </button>
             </div>
-            <button
-              onClick={() => setShowTypePicker(false)}
-              className="w-full text-gray-500 text-sm hover:text-white transition-all duration-200 cursor-pointer py-1"
-            >
-              Cancel
-            </button>
+            <div className="space-y-2">
+              {WORKOUT_TYPES.map((type) => {
+                const config = TYPE_CONFIG[type];
+                return (
+                  <button
+                    key={type}
+                    onClick={() => handleStartWorkout(type)}
+                    disabled={starting}
+                    className="w-full gradient-card rounded-2xl p-4 flex items-center gap-4 transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] cursor-pointer disabled:opacity-50"
+                  >
+                    <div className={`${config.gradient} w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0`}>
+                      {config.icon}
+                    </div>
+                    <div className="text-left">
+                      <p className="text-white font-bold text-lg">{type}</p>
+                      <p className="text-gray-400 text-xs">{config.desc}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         ) : (
           <button

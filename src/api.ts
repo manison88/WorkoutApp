@@ -52,6 +52,9 @@ export const updateSessionNotes = (id: number, notes: string) =>
     body: JSON.stringify({ notes }),
   });
 
+export const deleteSession = (id: number) =>
+  request<{ success: boolean }>(`/sessions/${id}`, { method: 'DELETE' });
+
 // Sets
 export const addSet = (data: { session_id: number; exercise_id: number; set_number: number; weight: number; reps: number; notes?: string }) =>
   request<WorkoutSet>('/sets', {
