@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { toPng } from 'html-to-image';
-import { getSession } from '../api';
+import { getSession, deleteSession } from '../api';
 import BackButton from './BackButton';
 import type { SessionWithSets, WorkoutSetWithExercise, MuscleGroup } from '../types';
 import { EXERCISE_MUSCLE_MAP } from '../types';
@@ -73,6 +73,8 @@ export default function WorkoutSummary() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!sessionId || isNaN(sessionId)) return;
@@ -151,6 +153,15 @@ export default function WorkoutSummary() {
   const muscleGroups = Array.from(muscleGroupSet);
 
   const quote = MOTIVATIONAL_QUOTES[sessionId % MOTIVATIONAL_QUOTES.length];
+
+  const handleDelete = async () => {
+    try {
+      await deleteSession(sessionId);
+      navigate('/history', { replace: true });
+    } catch (err) {
+      console.error('Failed to delete session', err);
+    }
+  };
 
   const captureImage = async () => {
     const element = document.getElementById('summary-card');
@@ -290,6 +301,32 @@ export default function WorkoutSummary() {
           </button>
         )}
       </div>
+
+      {/* Delete workout */}
+      {!confirmDelete ? (
+        <button
+          onClick={() => setConfirmDelete(true)}
+          className="w-full text-gray-600 hover:text-red-400 text-sm transition-colors cursor-pointer py-3 mt-4"
+        >
+          Delete Workout
+        </button>
+      ) : (
+        <div className="flex items-center justify-center gap-3 py-3 mt-4">
+          <p className="text-red-400 text-sm font-medium">Delete this workout?</p>
+          <button
+            onClick={handleDelete}
+            className="bg-red-600 hover:bg-red-500 text-white text-sm font-medium px-4 py-1.5 rounded-xl transition-colors cursor-pointer"
+          >
+            Delete
+          </button>
+          <button
+            onClick={() => setConfirmDelete(false)}
+            className="bg-dark-surface hover:bg-gray-700 text-gray-300 text-sm font-medium px-4 py-1.5 rounded-xl transition-colors cursor-pointer"
+          >
+            Cancel
+          </button>
+        </div>
+      )}
 
     </div>
   );
