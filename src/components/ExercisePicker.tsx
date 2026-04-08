@@ -4,15 +4,6 @@ import type { Exercise, BodyPart } from '../types';
 
 const BODY_PARTS: BodyPart[] = ['chest', 'back', 'shoulders', 'arms', 'legs', 'core'];
 
-const BODY_PART_COLORS: Record<BodyPart, string> = {
-  chest: 'gradient-purple-pink',
-  back: 'gradient-blue-cyan',
-  shoulders: 'gradient-orange-pink',
-  arms: 'gradient-green-cyan',
-  legs: 'gradient-purple-pink',
-  core: 'gradient-blue-cyan',
-};
-
 interface ExercisePickerProps {
   onSelect: (exercise: Exercise) => void;
   onClose: () => void;
@@ -88,11 +79,11 @@ export default function ExercisePicker({ onSelect, onClose }: ExercisePickerProp
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 px-4 pb-2 overflow-x-auto">
+        <div className="flex gap-2 px-4 pb-3 overflow-x-auto">
           <button
             onClick={() => setActiveTab('all')}
-            className={`px-3 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
-              activeTab === 'all' ? 'gradient-purple-pink text-white' : 'bg-dark-base text-gray-400'
+            className={`px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer ${
+              activeTab === 'all' ? 'bg-purple-600 text-white' : 'bg-dark-base text-gray-400 hover:text-white'
             }`}
           >
             All
@@ -101,8 +92,8 @@ export default function ExercisePicker({ onSelect, onClose }: ExercisePickerProp
             <button
               key={bp}
               onClick={() => setActiveTab(bp)}
-              className={`px-3 py-1 rounded-lg text-xs font-medium whitespace-nowrap capitalize transition-all duration-200 cursor-pointer ${
-                activeTab === bp ? BODY_PART_COLORS[bp] + ' text-white' : 'bg-dark-base text-gray-400'
+              className={`px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap capitalize transition-all duration-200 cursor-pointer ${
+                activeTab === bp ? 'bg-purple-600 text-white' : 'bg-dark-base text-gray-400 hover:text-white'
               }`}
             >
               {bp}
@@ -124,7 +115,7 @@ export default function ExercisePicker({ onSelect, onClose }: ExercisePickerProp
                   <span className="ml-2 text-accent-yellow text-xs">★</span>
                 )}
               </div>
-              <span className={`text-xs px-2 py-0.5 rounded-lg ${BODY_PART_COLORS[exercise.body_part]} text-white capitalize`}>
+              <span className="text-xs text-gray-500 capitalize">
                 {exercise.body_part}
               </span>
             </button>

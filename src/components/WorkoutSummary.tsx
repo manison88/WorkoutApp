@@ -140,7 +140,6 @@ export default function WorkoutSummary() {
     });
   }
 
-  const totalVolume = exercises.reduce((sum, e) => sum + e.totalVolume, 0);
   const totalSets = session.sets.length;
   const duration = formatDuration(session.started_at, session.ended_at);
   const date = formatDate(session.started_at);
@@ -217,16 +216,10 @@ export default function WorkoutSummary() {
       <div id="summary-card">
 
       {/* Stats grid */}
-      <div className="grid grid-cols-2 gap-3 mb-4">
+      <div className="grid grid-cols-3 gap-3 mb-4">
         <div className="gradient-card rounded-2xl p-4">
           <p className="text-gray-400 text-xs uppercase tracking-wide">Duration</p>
           <p className="text-white text-2xl font-bold mt-1">{duration}</p>
-        </div>
-        <div className="gradient-card rounded-2xl p-4">
-          <p className="text-gray-400 text-xs uppercase tracking-wide">Volume</p>
-          <p className="text-white text-2xl font-bold mt-1">
-            {totalVolume.toLocaleString()} <span className="text-base font-normal">lbs</span>
-          </p>
         </div>
         <div className="gradient-card rounded-2xl p-4">
           <p className="text-gray-400 text-xs uppercase tracking-wide">Total Sets</p>
