@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { toPng } from 'html-to-image';
 import { getSession } from '../api';
+import BackButton from './BackButton';
 import type { SessionWithSets, WorkoutSetWithExercise, MuscleGroup } from '../types';
 import { EXERCISE_MUSCLE_MAP } from '../types';
 
@@ -75,7 +76,6 @@ export default function WorkoutSummary() {
   const [error, setError] = useState<string | null>(null);
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('story');
   const [downloading, setDownloading] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!sessionId || isNaN(sessionId)) return;
@@ -146,7 +146,6 @@ export default function WorkoutSummary() {
   const duration = formatDuration(session.started_at, session.ended_at);
   const date = formatDate(session.started_at);
 
-  // Collect unique muscle groups
   const muscleGroupSet = new Set<string>();
   for (const ex of exercises) {
     const muscles = getMuscleGroups(ex.name);
@@ -203,299 +202,275 @@ export default function WorkoutSummary() {
   const cardHeight = isStory ? 1920 : 1080;
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
-      <h2 className="text-xl font-bold text-white mb-4">Workout Summary</h2>
+    <div className="max-w-lg mx-auto p-4 pb-8">
+      <BackButton />
+      <h2 className="text-2xl font-bold text-white mb-4">Workout Summary</h2>
 
-      {/* Controls */}
-      <div className="flex flex-wrap gap-3 mb-4">
-        {/* Aspect ratio toggle */}
+      {/* ===== MOBILE-FRIENDLY VISIBLE SUMMARY ===== */}
+
+      {/* Stats grid */}
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        <div className="gradient-card rounded-2xl p-4">
+          <p className="text-gray-400 text-xs uppercase tracking-wide">Duration</p>
+          <p className="text-white text-2xl font-bold mt-1">{duration}</p>
+        </div>
+        <div className="gradient-card rounded-2xl p-4">
+          <p className="text-gray-400 text-xs uppercase tracking-wide">Volume</p>
+          <p className="text-white text-2xl font-bold mt-1">
+            {totalVolume >= 1000 ? `${(totalVolume / 1000).toFixed(1)}k` : totalVolume} <span className="text-base font-normal">lbs</span>
+          </p>
+        </div>
+        <div className="gradient-card rounded-2xl p-4">
+          <p className="text-gray-400 text-xs uppercase tracking-wide">Total Sets</p>
+          <p className="text-white text-2xl font-bold mt-1">{totalSets}</p>
+        </div>
+        <div className="gradient-card rounded-2xl p-4">
+          <p className="text-gray-400 text-xs uppercase tracking-wide">Exercises</p>
+          <p className="text-white text-2xl font-bold mt-1">{exercises.length}</p>
+        </div>
+      </div>
+
+      {/* Date */}
+      <p className="text-gray-400 text-sm mb-4">{date}</p>
+
+      {/* Exercise list */}
+      <div className="gradient-card rounded-2xl p-4 mb-4">
+        <h3 className="text-gray-300 text-xs uppercase tracking-widest font-semibold mb-3">Exercises</h3>
+        <div className="space-y-3">
+          {exercises.map((ex, i) => (
+            <div
+              key={i}
+              className="flex items-center justify-between"
+            >
+              <div>
+                <p className="text-white font-semibold">{ex.name}</p>
+                <p className="text-gray-500 text-xs">{ex.totalSets} sets</p>
+              </div>
+              <div className="text-right">
+                <p className="text-white font-bold">{ex.bestWeight} lbs</p>
+                <p className="text-gray-500 text-xs">x {ex.bestReps} reps</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Muscle groups */}
+      {muscleGroups.length > 0 && (
+        <div className="mb-4">
+          <h3 className="text-gray-300 text-xs uppercase tracking-widest font-semibold mb-2">Muscles Worked</h3>
+          <div className="flex flex-wrap gap-2">
+            {muscleGroups.map((mg) => (
+              <span
+                key={mg}
+                className="text-white text-xs font-semibold px-3 py-1.5 rounded-full capitalize"
+                style={{ background: MUSCLE_COLORS[mg] || 'rgba(255,255,255,0.2)' }}
+              >
+                {mg.replace('_', ' ')}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Quote */}
+      <p className="text-gray-500 text-sm italic text-center mb-6">"{quote}"</p>
+
+      {/* Export controls */}
+      <div className="gradient-card rounded-2xl p-4 space-y-3">
+        <h3 className="text-gray-300 text-xs uppercase tracking-widest font-semibold">Share to Instagram</h3>
         <div className="flex gap-2">
           <button
             onClick={() => setAspectRatio('story')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex-1 px-3 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer ${
               aspectRatio === 'story'
                 ? 'bg-purple-600 text-white'
-                : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                : 'bg-dark-base text-gray-400 hover:bg-dark-surface'
             }`}
           >
             Story (9:16)
           </button>
           <button
             onClick={() => setAspectRatio('post')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex-1 px-3 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer ${
               aspectRatio === 'post'
                 ? 'bg-purple-600 text-white'
-                : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                : 'bg-dark-base text-gray-400 hover:bg-dark-surface'
             }`}
           >
             Post (1:1)
           </button>
         </div>
-
-        {/* Action buttons */}
-        <button
-          onClick={handleDownload}
-          disabled={downloading}
-          className="px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-pink-500 to-orange-500 text-white hover:opacity-90 transition-opacity disabled:opacity-50"
-        >
-          {downloading ? 'Exporting...' : 'Download as Image'}
-        </button>
-        {typeof navigator !== 'undefined' && typeof navigator.share === 'function' && (
+        <div className="flex gap-2">
           <button
-            onClick={handleShare}
-            className="px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:opacity-90 transition-opacity"
+            onClick={handleDownload}
+            disabled={downloading}
+            className="flex-1 gradient-orange-pink text-white font-medium rounded-xl py-2.5 text-sm hover:opacity-90 transition-opacity disabled:opacity-50 cursor-pointer"
           >
-            Share
+            {downloading ? 'Exporting...' : 'Download Image'}
           </button>
-        )}
+          {typeof navigator !== 'undefined' && typeof navigator.share === 'function' && (
+            <button
+              onClick={handleShare}
+              className="flex-1 gradient-blue-cyan text-white font-medium rounded-xl py-2.5 text-sm hover:opacity-90 transition-opacity cursor-pointer"
+            >
+              Share
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Summary Card Preview */}
+      {/* ===== HIDDEN EXPORT CARD (off-screen, used only for image generation) ===== */}
       <div
-        className="overflow-auto rounded-2xl border border-gray-800"
-        style={{ maxHeight: '80vh' }}
+        id="summary-card"
+        style={{
+          position: 'absolute',
+          left: '-9999px',
+          top: 0,
+          width: cardWidth,
+          height: cardHeight,
+          background: 'linear-gradient(135deg, #4c1d95 0%, #be185d 40%, #ea580c 80%, #facc15 100%)',
+          padding: isStory ? 80 : 50,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          color: '#ffffff',
+          boxSizing: 'border-box',
+          overflow: 'hidden',
+        }}
       >
+        {/* Decorative circles */}
         <div
-          id="summary-card"
-          ref={cardRef}
           style={{
-            width: cardWidth,
-            height: cardHeight,
-            background: 'linear-gradient(135deg, #4c1d95 0%, #be185d 40%, #ea580c 80%, #facc15 100%)',
-            padding: isStory ? 80 : 50,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-            color: '#ffffff',
-            boxSizing: 'border-box',
-            position: 'relative',
-            overflow: 'hidden',
+            position: 'absolute',
+            top: -120,
+            right: -120,
+            width: 400,
+            height: 400,
+            borderRadius: '50%',
+            background: 'rgba(255,255,255,0.06)',
           }}
-        >
-          {/* Decorative circles */}
-          <div
-            style={{
-              position: 'absolute',
-              top: -120,
-              right: -120,
-              width: 400,
-              height: 400,
-              borderRadius: '50%',
-              background: 'rgba(255,255,255,0.06)',
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              bottom: -80,
-              left: -80,
-              width: 300,
-              height: 300,
-              borderRadius: '50%',
-              background: 'rgba(255,255,255,0.04)',
-            }}
-          />
+        />
+        <div
+          style={{
+            position: 'absolute',
+            bottom: -80,
+            left: -80,
+            width: 300,
+            height: 300,
+            borderRadius: '50%',
+            background: 'rgba(255,255,255,0.04)',
+          }}
+        />
 
-          {/* Top section: Logo + User + Date */}
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <div
-              style={{
-                fontSize: isStory ? 42 : 32,
-                fontWeight: 900,
-                letterSpacing: 6,
-                marginBottom: 8,
-                textTransform: 'uppercase' as const,
-              }}
-            >
-              WORKOUT TRACKER
+        {/* Top section */}
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <div
+            style={{
+              fontSize: isStory ? 42 : 32,
+              fontWeight: 900,
+              letterSpacing: 6,
+              marginBottom: 8,
+              textTransform: 'uppercase' as const,
+            }}
+          >
+            WORKOUT TRACKER
+          </div>
+          <div style={{ fontSize: isStory ? 28 : 20, fontWeight: 500, opacity: 0.85 }}>
+            {date}
+          </div>
+        </div>
+
+        {/* Stats grid */}
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: isStory ? '1fr 1fr' : '1fr 1fr 1fr',
+              gap: isStory ? 20 : 16,
+              marginBottom: isStory ? 40 : 24,
+            }}
+          >
+            <div style={{ background: 'rgba(0,0,0,0.25)', borderRadius: 20, padding: isStory ? '28px 24px' : '20px 18px' }}>
+              <div style={{ fontSize: isStory ? 18 : 14, opacity: 0.7, marginBottom: 4 }}>Duration</div>
+              <div style={{ fontSize: isStory ? 36 : 26, fontWeight: 800 }}>{duration}</div>
             </div>
-            <div
-              style={{
-                fontSize: isStory ? 28 : 20,
-                fontWeight: 500,
-                opacity: 0.85,
-              }}
-            >
-              {date}
+            <div style={{ background: 'rgba(0,0,0,0.25)', borderRadius: 20, padding: isStory ? '28px 24px' : '20px 18px' }}>
+              <div style={{ fontSize: isStory ? 18 : 14, opacity: 0.7, marginBottom: 4 }}>Volume</div>
+              <div style={{ fontSize: isStory ? 36 : 26, fontWeight: 800 }}>
+                {totalVolume >= 1000 ? `${(totalVolume / 1000).toFixed(1)}k` : totalVolume} lbs
+              </div>
+            </div>
+            <div style={{ background: 'rgba(0,0,0,0.25)', borderRadius: 20, padding: isStory ? '28px 24px' : '20px 18px' }}>
+              <div style={{ fontSize: isStory ? 18 : 14, opacity: 0.7, marginBottom: 4 }}>Sets</div>
+              <div style={{ fontSize: isStory ? 36 : 26, fontWeight: 800 }}>{totalSets}</div>
             </div>
           </div>
 
-          {/* Stats grid */}
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: isStory ? '1fr 1fr' : '1fr 1fr 1fr',
-                gap: isStory ? 20 : 16,
-                marginBottom: isStory ? 40 : 24,
-              }}
-            >
-              {/* Duration */}
-              <div
-                style={{
-                  background: 'rgba(0,0,0,0.25)',
-                  borderRadius: 20,
-                  padding: isStory ? '28px 24px' : '20px 18px',
-                  backdropFilter: 'blur(10px)',
-                }}
-              >
-                <div style={{ fontSize: isStory ? 18 : 14, opacity: 0.7, marginBottom: 4 }}>
-                  Duration
-                </div>
-                <div style={{ fontSize: isStory ? 36 : 26, fontWeight: 800 }}>
-                  {duration}
-                </div>
-              </div>
-
-              {/* Total Volume */}
-              <div
-                style={{
-                  background: 'rgba(0,0,0,0.25)',
-                  borderRadius: 20,
-                  padding: isStory ? '28px 24px' : '20px 18px',
-                  backdropFilter: 'blur(10px)',
-                }}
-              >
-                <div style={{ fontSize: isStory ? 18 : 14, opacity: 0.7, marginBottom: 4 }}>
-                  Volume
-                </div>
-                <div style={{ fontSize: isStory ? 36 : 26, fontWeight: 800 }}>
-                  {totalVolume >= 1000 ? `${(totalVolume / 1000).toFixed(1)}k` : totalVolume} lbs
-                </div>
-              </div>
-
-              {/* Total Sets */}
-              <div
-                style={{
-                  background: 'rgba(0,0,0,0.25)',
-                  borderRadius: 20,
-                  padding: isStory ? '28px 24px' : '20px 18px',
-                  backdropFilter: 'blur(10px)',
-                }}
-              >
-                <div style={{ fontSize: isStory ? 18 : 14, opacity: 0.7, marginBottom: 4 }}>
-                  Sets
-                </div>
-                <div style={{ fontSize: isStory ? 36 : 26, fontWeight: 800 }}>
-                  {totalSets}
-                </div>
-              </div>
+          {/* Exercise list */}
+          <div style={{ background: 'rgba(0,0,0,0.2)', borderRadius: 20, padding: isStory ? '28px 24px' : '20px 18px', marginBottom: isStory ? 40 : 24 }}>
+            <div style={{ fontSize: isStory ? 20 : 16, fontWeight: 700, marginBottom: isStory ? 16 : 12, opacity: 0.8, textTransform: 'uppercase' as const, letterSpacing: 2 }}>
+              Exercises
             </div>
-
-            {/* Exercise list */}
-            <div
-              style={{
-                background: 'rgba(0,0,0,0.2)',
-                borderRadius: 20,
-                padding: isStory ? '28px 24px' : '20px 18px',
-                marginBottom: isStory ? 40 : 24,
-                backdropFilter: 'blur(10px)',
-              }}
-            >
+            {exercises.map((ex, i) => (
               <div
+                key={i}
                 style={{
-                  fontSize: isStory ? 20 : 16,
-                  fontWeight: 700,
-                  marginBottom: isStory ? 16 : 12,
-                  opacity: 0.8,
-                  textTransform: 'uppercase' as const,
-                  letterSpacing: 2,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: isStory ? '12px 0' : '8px 0',
+                  borderBottom: i < exercises.length - 1 ? '1px solid rgba(255,255,255,0.1)' : 'none',
                 }}
               >
-                Exercises
-              </div>
-              {exercises.map((ex, i) => (
-                <div
-                  key={i}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    padding: isStory ? '12px 0' : '8px 0',
-                    borderBottom: i < exercises.length - 1 ? '1px solid rgba(255,255,255,0.1)' : 'none',
-                  }}
-                >
-                  <div>
-                    <div style={{ fontSize: isStory ? 22 : 17, fontWeight: 600 }}>
-                      {ex.name}
-                    </div>
-                    <div style={{ fontSize: isStory ? 16 : 13, opacity: 0.6 }}>
-                      {ex.totalSets} sets
-                    </div>
-                  </div>
-                  <div style={{ textAlign: 'right' as const }}>
-                    <div style={{ fontSize: isStory ? 22 : 17, fontWeight: 700 }}>
-                      {ex.bestWeight} lbs
-                    </div>
-                    <div style={{ fontSize: isStory ? 16 : 13, opacity: 0.6 }}>
-                      x {ex.bestReps} reps
-                    </div>
-                  </div>
+                <div>
+                  <div style={{ fontSize: isStory ? 22 : 17, fontWeight: 600 }}>{ex.name}</div>
+                  <div style={{ fontSize: isStory ? 16 : 13, opacity: 0.6 }}>{ex.totalSets} sets</div>
                 </div>
-              ))}
-            </div>
-
-            {/* Muscle groups */}
-            {muscleGroups.length > 0 && (
-              <div style={{ marginBottom: isStory ? 40 : 24 }}>
-                <div
-                  style={{
-                    fontSize: isStory ? 18 : 14,
-                    fontWeight: 700,
-                    marginBottom: 12,
-                    opacity: 0.7,
-                    textTransform: 'uppercase' as const,
-                    letterSpacing: 2,
-                  }}
-                >
-                  Muscles Worked
-                </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 8 }}>
-                  {muscleGroups.map((mg) => (
-                    <span
-                      key={mg}
-                      style={{
-                        background: MUSCLE_COLORS[mg] || 'rgba(255,255,255,0.2)',
-                        color: '#ffffff',
-                        padding: isStory ? '8px 18px' : '6px 14px',
-                        borderRadius: 50,
-                        fontSize: isStory ? 18 : 14,
-                        fontWeight: 600,
-                        textTransform: 'capitalize' as const,
-                      }}
-                    >
-                      {mg.replace('_', ' ')}
-                    </span>
-                  ))}
+                <div style={{ textAlign: 'right' as const }}>
+                  <div style={{ fontSize: isStory ? 22 : 17, fontWeight: 700 }}>{ex.bestWeight} lbs</div>
+                  <div style={{ fontSize: isStory ? 16 : 13, opacity: 0.6 }}>x {ex.bestReps} reps</div>
                 </div>
               </div>
-            )}
+            ))}
           </div>
 
-          {/* Bottom: motivational quote */}
-          <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' as const }}>
-            <div
-              style={{
-                fontSize: isStory ? 22 : 16,
-                fontWeight: 600,
-                fontStyle: 'italic' as const,
-                opacity: 0.7,
-                marginBottom: 8,
-              }}
-            >
-              "{quote}"
+          {/* Muscle groups */}
+          {muscleGroups.length > 0 && (
+            <div style={{ marginBottom: isStory ? 40 : 24 }}>
+              <div style={{ fontSize: isStory ? 18 : 14, fontWeight: 700, marginBottom: 12, opacity: 0.7, textTransform: 'uppercase' as const, letterSpacing: 2 }}>
+                Muscles Worked
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 8 }}>
+                {muscleGroups.map((mg) => (
+                  <span
+                    key={mg}
+                    style={{
+                      background: MUSCLE_COLORS[mg] || 'rgba(255,255,255,0.2)',
+                      color: '#ffffff',
+                      padding: isStory ? '8px 18px' : '6px 14px',
+                      borderRadius: 50,
+                      fontSize: isStory ? 18 : 14,
+                      fontWeight: 600,
+                      textTransform: 'capitalize' as const,
+                    }}
+                  >
+                    {mg.replace('_', ' ')}
+                  </span>
+                ))}
+              </div>
             </div>
-            <div
-              style={{
-                fontSize: isStory ? 16 : 12,
-                opacity: 0.4,
-                letterSpacing: 3,
-                textTransform: 'uppercase' as const,
-              }}
-            >
-              WORKOUT TRACKER
-            </div>
+          )}
+        </div>
+
+        {/* Bottom quote */}
+        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' as const }}>
+          <div style={{ fontSize: isStory ? 22 : 16, fontWeight: 600, fontStyle: 'italic' as const, opacity: 0.7, marginBottom: 8 }}>
+            "{quote}"
+          </div>
+          <div style={{ fontSize: isStory ? 16 : 12, opacity: 0.4, letterSpacing: 3, textTransform: 'uppercase' as const }}>
+            WORKOUT TRACKER
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { getSessions, getSession } from '../api';
+import BackButton from './BackButton';
 import Navigation from './Navigation';
 import type { WorkoutSession, SessionWithSets } from '../types';
 
@@ -84,7 +85,8 @@ export default function WorkoutHistory() {
   return (
     <div className="min-h-screen pb-24">
       <div className="max-w-lg mx-auto p-4 space-y-4">
-        <div className="pt-2">
+        <BackButton />
+        <div>
           <h1 className="text-3xl font-bold">Workout History</h1>
           <p className="text-gray-400 text-sm mt-1">{user.name}'s past sessions</p>
         </div>
@@ -131,7 +133,7 @@ export default function WorkoutHistory() {
                     )}
                     {volume !== null && volume > 0 && (
                       <span className="text-gray-400 text-xs">
-                        {volume.toLocaleString()} kg total volume
+                        {volume.toLocaleString()} lbs total volume
                       </span>
                     )}
                   </div>

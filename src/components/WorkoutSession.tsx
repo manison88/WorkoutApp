@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { getSession, addSet, deleteSet, endSession, updateSessionNotes } from '../api';
+import BackButton from './BackButton';
 import ExercisePicker from './ExercisePicker';
 import SetLogger from './SetLogger';
 import NoteEditor from './NoteEditor';
@@ -155,8 +156,9 @@ export default function WorkoutSession() {
   return (
     <div className="min-h-screen pb-8">
       <div className="max-w-lg mx-auto p-4 space-y-4">
+        <BackButton />
         {/* Header with timer */}
-        <div className="flex items-center justify-between pt-2">
+        <div className="flex items-center justify-between">
           <button
             onClick={() => navigate('/dashboard')}
             className="text-gray-400 hover:text-white transition-all duration-200 cursor-pointer"

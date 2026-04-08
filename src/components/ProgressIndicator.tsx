@@ -48,7 +48,7 @@ export default function ProgressIndicator({
       <span>{arrow}</span>
       <span>{label}</span>
       <span className="text-gray-500 font-normal ml-1">
-        (prev: {pw}kg x {pr})
+        (prev: {pw} lbs x {pr})
       </span>
     </span>
   );

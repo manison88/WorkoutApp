@@ -66,7 +66,7 @@ export default function SetLogger({ sessionId, exercise, sets, onAddSet, onDelet
           <div className="flex gap-3 mt-1 flex-wrap">
             {previousSets.map((ps, i) => (
               <span key={i}>
-                Set {i + 1}: {ps.weight}kg x {ps.reps}
+                Set {i + 1}: {ps.weight} lbs x {ps.reps}
               </span>
             ))}
           </div>
@@ -81,7 +81,7 @@ export default function SetLogger({ sessionId, exercise, sets, onAddSet, onDelet
               <div className="flex items-center gap-3">
                 <span className="text-xs text-gray-500 w-12">Set {i + 1}</span>
                 <span className="text-white font-medium">
-                  {s.weight}kg x {s.reps}
+                  {s.weight} lbs x {s.reps}
                 </span>
               </div>
               <div className="flex items-center gap-3">
@@ -111,7 +111,7 @@ export default function SetLogger({ sessionId, exercise, sets, onAddSet, onDelet
           type="number"
           value={weight}
           onChange={(e) => setWeight(e.target.value)}
-          placeholder="kg"
+          placeholder="lbs"
           className="w-20 bg-dark-base border border-white/10 rounded-xl px-3 py-2 text-white text-center placeholder-gray-500 focus:outline-none focus:border-accent-purple transition-all duration-200"
         />
         <span className="text-gray-500">x</span>
