@@ -221,7 +221,7 @@ export default function WorkoutSummary() {
         <div className="gradient-card rounded-2xl p-4">
           <p className="text-gray-400 text-xs uppercase tracking-wide">Volume</p>
           <p className="text-white text-2xl font-bold mt-1">
-            {totalVolume >= 1000 ? `${(totalVolume / 1000).toFixed(1)}k` : totalVolume} <span className="text-base font-normal">lbs</span>
+            {totalVolume.toLocaleString()} <span className="text-base font-normal">lbs</span>
           </p>
         </div>
         <div className="gradient-card rounded-2xl p-4">
@@ -322,12 +322,10 @@ export default function WorkoutSummary() {
       </div>
 
       {/* ===== HIDDEN EXPORT CARD (off-screen, used only for image generation) ===== */}
+      <div style={{ position: 'absolute', left: '-9999px', top: 0 }}>
       <div
         id="summary-card"
         style={{
-          position: 'absolute',
-          left: '-9999px',
-          top: 0,
           width: cardWidth,
           height: cardHeight,
           background: 'linear-gradient(135deg, #4c1d95 0%, #be185d 40%, #ea580c 80%, #facc15 100%)',
@@ -400,7 +398,7 @@ export default function WorkoutSummary() {
             <div style={{ background: 'rgba(0,0,0,0.25)', borderRadius: 20, padding: isStory ? '28px 24px' : '20px 18px' }}>
               <div style={{ fontSize: isStory ? 18 : 14, opacity: 0.7, marginBottom: 4 }}>Volume</div>
               <div style={{ fontSize: isStory ? 36 : 26, fontWeight: 800 }}>
-                {totalVolume >= 1000 ? `${(totalVolume / 1000).toFixed(1)}k` : totalVolume} lbs
+                {totalVolume.toLocaleString()} lbs
               </div>
             </div>
             <div style={{ background: 'rgba(0,0,0,0.25)', borderRadius: 20, padding: isStory ? '28px 24px' : '20px 18px' }}>
@@ -474,6 +472,7 @@ export default function WorkoutSummary() {
             WORKOUT TRACKER
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
