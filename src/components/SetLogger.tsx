@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getProgress } from '../api';
 import { useUser } from '../context/UserContext';
-import ProgressIndicator from './ProgressIndicator';
 import type { Exercise, WorkoutSetWithExercise, WorkoutSet } from '../types';
 
 const BODY_PART_COLORS: Record<string, string> = {
@@ -84,22 +83,12 @@ export default function SetLogger({ sessionId, exercise, sets, onAddSet, onDelet
                   {s.weight} lbs x {s.reps}
                 </span>
               </div>
-              <div className="flex items-center gap-3">
-                {previousSets[i] && (
-                  <ProgressIndicator
-                    currentWeight={s.weight}
-                    currentReps={s.reps}
-                    previousWeight={previousSets[i].weight}
-                    previousReps={previousSets[i].reps}
-                  />
-                )}
-                <button
-                  onClick={() => onDeleteSet(s.id)}
-                  className="text-gray-500 hover:text-accent-red transition-all duration-200 text-sm cursor-pointer"
-                >
-                  ✕
-                </button>
-              </div>
+              <button
+                onClick={() => onDeleteSet(s.id)}
+                className="text-gray-500 hover:text-accent-red transition-all duration-200 text-sm cursor-pointer"
+              >
+                ✕
+              </button>
             </div>
           ))}
         </div>
