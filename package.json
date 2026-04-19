@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build && cp .assetsignore dist/.assetsignore && wrangler pages functions build --outdir=./dist/_worker.js/",
     "deploy": "npm run build && wrangler deploy",
-    "ship": "git checkout main && git merge claude/fix-share-screen-volume-sZBtq && npm run deploy",
+    "ship": "git pull && npm run deploy",
     "lint": "eslint .",
     "preview": "vite preview"
   },
